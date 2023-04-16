@@ -20,6 +20,7 @@ services:
     volumes:
       # Контейнер web будет работать с данными, хранящиеся в томе static_value, 
       # через свою директорию /app/static/
+      # - static_value:/app/static/
       - static_value:/app/static/
       # Данные, хранящиеся в томе media_value, будут доступны в контейнере web 
       # через директорию /app/media/
