@@ -1,106 +1,57 @@
-REST API для проекта YaMDb
-Содержимое файла requirements:
-- requests==2.26.0
-- Django==3.2
-- djangorestframework==3.12.4
-- djangorestframework-simplejwt==5.2.2
-- PyJWT==2.1.0
-- pytest==6.2.4
-- pytest-django==4.4.0
-- pytest-pythonpath==0.7.3
-- psycopg2-binary==2.8.6
-- gunicorn==20.0.4
-- django-filter==23.1
+### REST API для сервиса YaMDb — базы отзывов о фильмах, книгах и музыке. (Коллективный проект 3х студентов Яндекс.Практикум)
 
-Установка:
-Как запустить проект: Клонировать репозиторий и перейти в него в командной строке:
+## Технологический стек
+![Django-app workflow](https://github.com/needred/yamdb_final/actions/workflows/yamdb_workflow.yml/badge.svg)
+[![Python](https://img.shields.io/badge/-Python-464646?style=flat&logo=Python&logoColor=56C0C0&color=008080)](https://www.python.org/)
+[![Django](https://img.shields.io/badge/-Django-464646?style=flat&logo=Django&logoColor=56C0C0&color=008080)](https://www.djangoproject.com/)
+[![Django REST Framework](https://img.shields.io/badge/-Django%20REST%20Framework-464646?style=flat&logo=Django%20REST%20Framework&logoColor=56C0C0&color=008080)](https://www.django-rest-framework.org/)
+[![PostgreSQL](https://img.shields.io/badge/-PostgreSQL-464646?style=flat&logo=PostgreSQL&logoColor=56C0C0&color=008080)](https://www.postgresql.org/)
+[![JWT](https://img.shields.io/badge/-JWT-464646?style=flat&color=008080)](https://jwt.io/)
+[![Nginx](https://img.shields.io/badge/-NGINX-464646?style=flat&logo=NGINX&logoColor=56C0C0&color=008080)](https://nginx.org/ru/)
+[![gunicorn](https://img.shields.io/badge/-gunicorn-464646?style=flat&logo=gunicorn&logoColor=56C0C0&color=008080)](https://gunicorn.org/)
+[![Docker](https://img.shields.io/badge/-Docker-464646?style=flat&logo=Docker&logoColor=56C0C0&color=008080)](https://www.docker.com/)
+[![Docker-compose](https://img.shields.io/badge/-Docker%20compose-464646?style=flat&logo=Docker&logoColor=56C0C0&color=008080)](https://www.docker.com/)
+[![Docker Hub](https://img.shields.io/badge/-Docker%20Hub-464646?style=flat&logo=Docker&logoColor=56C0C0&color=008080)](https://www.docker.com/products/docker-hub)
+[![GitHub%20Actions](https://img.shields.io/badge/-GitHub%20Actions-464646?style=flat&logo=GitHub%20actions&logoColor=56C0C0&color=008080)](https://github.com/features/actions)
+[![Yandex.Cloud](https://img.shields.io/badge/-Yandex.Cloud-464646?style=flat&logo=Yandex.Cloud&logoColor=56C0C0&color=008080)](https://cloud.yandex.ru/)
 
-https://github.com/Alexsiiassa/api_yamdb cd api_yamdb Cоздать и активировать виртуальное окружение:
-- Установить зависимости из файла requirements.txt:
-```bash
-python3 -m venv env source env/bin/activate
-``` 
 
- Выполнить миграции:
- ```bash
- python3 -m pip install --upgrade pip pip install -r requirements.txt
- ```
+## Как развернуть проект в Docker container локально:
 
- Запустить проект:
- ```bash
- python3 manage.py migrate
- ```
-
-```bash
-python3 manage.py runserver
+Клонируйте репозиторий в нужную вам папку:
+```
+https://github.com/gusevskiy/infra_sp2.git
+```
+Создайте файл .env в директории `infra` добавьте в него переменные окружения для работы с базой данных:
+```
+DB_ENGINE=django.db.backends.postgresql
+DB_NAME=postgres # имя базы данных
+POSTGRES_USER=postgres # логин для подключения к базе данных
+POSTGRES_PASSWORD=postgres # пароль для подключения к БД (установите свой)
+DB_HOST=db # название сервиса (контейнера)
+DB_PORT=5432 # порт для подключения к БД
 ```
 
-При желании можно загрузить тестовые данные в базу данных командой: 
+Соберите контейнеры:
+```
+docker-compose up -d --build
+```
+Выполните команды по очереди:
+```
+docker-compose exec web python manage.py migrate
+docker-compose exec web python manage.py createsuperuser
+docker-compose exec web python manage.py collectstatic --no-input 
+```
+Можно заполнить БД тестовыми данными:
 ```bash
 python3 manage.py load_csv_data
 ```
-```bash
-./manage.py loaddata data/fixtures.json
+
+
+## Ссылки
+### Документация к проектуAPI YaMDb - будет доступна на эндпойнт:
+```json
+localhost/redoc/
 ```
 
-### Описание проекта
-Проект YaMDb собирает отзывы (Review) пользователей на произведения (Titles). Произведения делятся на категории: Книги, Фильмы, Музыка. Список категорий (Category) может быть расширен администратором (например, можно добавить категорию изобразительное искусство или Ювелирка). Сами произведения в YaMDb не хранятся, здесь нельзя посмотреть фильм или послушать музыку. В каждой категории есть произведения: книги, фильмы или музыка. Например, в категории Книги могут быть произведения Винни-Пух и все-все-все и Марсианские хроники, а в категории Музыка — песня Давеча группы Насекомые и вторая сюита Баха. Произведению может быть присвоен жанр (Genre) из списка предустановленных (например, Сказка, Рок или Артхаус). Новые жанры может создавать только администратор.
-
-Благодарные или возмущённые пользователи оставляют к произведениям текстовые отзывы (Review) и ставят произведению оценку в диапазоне от одного до десяти (целое число); из пользовательских оценок формируется усреднённая оценка произведения — рейтинг (целое число). На одно произведение пользователь может оставить только один отзыв.
-
-Когда вы запустите проект, по адресу http://127.0.0.1:8000/redoc/ будет доступна документация для API YaMDb. В документации описано, как как работает API. Документация представлена в формате Redoc.
-
-Аутентифицированный пользователь авторизован на изменение и удаление своего контента; в остальных случаях доступ предоставляется только для чтения. При попытке изменить чужие данные должен возвращаться код ответа 403 Forbidden.
-
-Пользовательские роли
-Аноним — может просматривать описания произведений, читать отзывы и комментарии.
-
-Аутентифицированный пользователь (user) — может, как и Аноним, читать всё, дополнительно он может публиковать отзывы и ставить оценку произведениям (фильмам/книгам/песенкам), может комментировать чужие отзывы; может редактировать и удалять свои отзывы и комментарии. Эта роль присваивается по умолчанию каждому новому пользователю.
-
-Модератор (moderator) — те же права, что и у Аутентифицированного пользователя плюс право удалять любые отзывы и комментарии.
-
-Администратор (admin) — полные права на управление всем контентом проекта. Может создавать и удалять произведения, категории и жанры. Может назначать роли пользователям.
-
-Суперюзер Django — обладет правами администратора (admin)
-
-Authentication
-jwt-token
-
-используется аутентификация с использованием JWT-токенов
-
-Алгоритм регистрации пользователей
-Пользователь отправляет POST-запрос на добавление нового пользователя с параметрами email и username на эндпоинт /api/v1/auth/signup/.
-
-YaMDB отправляет письмо с кодом подтверждения (confirmation_code) на адрес email.
-
-Пользователь отправляет POST-запрос с параметрами username и confirmation_code на эндпоинт /api/v1/auth/token/, в ответе на запрос ему приходит token (JWT-токен).
-
-При желании пользователь отправляет PATCH-запрос на эндпоинт /api/v1/users/me/ и заполняет поля в своём профайле (описание полей — в документации).
-
-Ресурсы API YaMDb:
-api/v1/auth/token (POST): передаём логин и пароль, получаем токен.
-
-api/v1/users/me/ (GET, PATCH): пользователь переходит в свой профайл.
-
-api/v1/users/ (GET, POST, PATCH, DELETE): пользователи.
-
-api/v1/titles/ (GET, POST, PATCH): произведения, к которым пишут отзывы.
-
-api/v1/categories/ (GET, POST, DELETE): категории (типы) произведений (Фильмы, Книги, Музыка).
-
-api/v1/genres/ (GET, POST, DELETE): жанры произведений.
-
-api/v1/reviews/ (GET, POST, PATCH, DELETE): отзывы на произведения.
-
-api/v1/comments/ (GET, POST, PATCH, DELETE): комментарии к отзывам.
-
-При запросе на изменение или удаление данных осуществляется проверка прав доступа.
-
-База данных:
-Для загрузки данных, получаемых вместе с проектом, используем management-команду, добавляющую данные в БД через Django ORM.
-
-Файлы CSV, расположенны в папке static. Выполнив все миграции, можно добавить данные из CSV в БД выполнив команду в терминале:
-
-```bash
-python manage.py load_csv_data
-```
+### [Описание функционала приложения](https://github.com/gusevskiy/api_yamdb)
