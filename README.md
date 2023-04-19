@@ -45,6 +45,7 @@ docker-compose exec web python manage.py collectstatic --no-input
 Можно заполнить БД тестовыми данными:
 ```bash
 python3 manage.py load_csv_data
+python manage.py loaddata infra/fixtures.json
 ```
 
 
